@@ -39,4 +39,9 @@ studied by books
 ```python
 import pygame, sys
 ```
+### algorithm
+
+studied by books
+
+[algorithm](algorithm) has no Frame.
 </details>
