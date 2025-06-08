@@ -5,9 +5,9 @@ pygame.init()
 clock = pygame.time.Clock()
 pygame.display.set_caption("fly Cather")
 screen = pygame.display.set_mode((1000,600))
-fly_image = pygame.image.load("파이썬으로 시작하는 코딩/images/fly.png").convert_alpha()
-fly_sound = pygame.mixer.Sound("파이썬으로 시작하는 코딩/sounds/fly-buzz.ogg")
-homescreen_image = pygame.image.load("파이썬으로 시작하는 코딩/images/flycatcher_home.png").convert_alpha()
+fly_image = pygame.image.load("python_coding/images/fly.png").convert_alpha()
+fly_sound = pygame.mixer.Sound("python_coding/sounds/fly-buzz.ogg")
+homescreen_image = pygame.image.load("python_coding/images/flycatcher_home.png").convert_alpha()
 font = pygame.font.SysFont("draglinebtndm",60)
 menu = "start"
 

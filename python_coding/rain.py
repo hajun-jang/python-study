@@ -6,9 +6,9 @@ pygame.display.set_caption("rain")
 screen = pygame.display.set_mode((1000, 600))
 clock = pygame.time.Clock()
 raindrop_spawn_time = 0
-mike_umbrella_image = pygame.image.load("파이썬으로 시작하는 코딩/images/Mike_umbrella.png").convert()
-cloud_image = pygame.image.load("파이썬으로 시작하는 코딩/images/cloud.png").convert()
-mike_image = pygame.image.load("파이썬으로 시작하는 코딩/images/mike.png").convert()
+mike_umbrella_image = pygame.image.load("python_coding/images/Mike_umbrella.png").convert()
+cloud_image = pygame.image.load("python_coding/images/cloud.png").convert()
+mike_image = pygame.image.load("python_coding/images/mike.png").convert()
 last_hit_time = 0
 
 class Raindrop:
