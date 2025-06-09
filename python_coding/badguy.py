@@ -1,4 +1,4 @@
-import pygame, sys, random, time
+import pygame, sys, random, time, math
 from pygame.locals import *
 pygame.init()
 clock = pygame.time.Clock()
@@ -22,8 +22,10 @@ class Badguy:
     def __init__(self):
         self.x = random.randint(0, 570)
         self.y = -100
-        self.dy = random.randint(2,6)
-        self.dx = random.choice((-1, 1))*self.dy
+        d=(math.pi/2)*random.random()-(math.pi/4)
+        speed = random.randint(2, 6)
+        self.dy = math.cos(d)*speed
+        self.dx = math.sin(d)*speed
 
     def move(self):
         self.x += self.dx
