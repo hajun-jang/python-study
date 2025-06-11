@@ -8,7 +8,11 @@ ball_image = pygame.image.load("python_coding/images/ball.png").convert_alpha()
 rscore = 0
 lscore = 0
 p = math.pi
+match_start = time.time()
 font = pygame.font.Font(None,40)
+font2 = pygame.font.SysFont("corbel",70)
+font3 = pygame.font.Font(None,60)
+font4 = pygame.font.Font(None,30)
 
 class Bat:
     def __init__(self,ctrls,x,side):
@@ -87,6 +91,8 @@ while True:
 
     pygame.draw.line(screen,(255,255,255),(screen.get_width()/2,0),(screen.get_width()/2,screen.get_height()),3)
     pygame.draw.circle(screen,(255,255,255),(int(screen.get_width()/2),int(screen.get_height()/2)),50,3)
+    txt = font.render(str(int(60 - (time.time() - match_start))),True,(255,255,255))
+    screen.blit(txt,(screen.get_width()/2 - txt.get_width()/2,20))
 
     for bat in bats:
         bat.move()
@@ -108,5 +114,34 @@ while True:
     screen.blit(txt,(20,20))
     txt = font.render(str(rscore),True,(255,255,255))
     screen.blit(txt,(980-txt.get_width(),20))
+
+    if time.time() - match_start > 60:
+        txt = font2.render("score",True,(255,0,255))
+        screen.blit(txt,(screen.get_width()/4 - txt.get_width()/2,screen.get_height()/4))
+        screen.blit(txt,(screen.get_width()*3/4 - txt.get_width()/2,screen.get_height()/4))
+        txt = font3.render(str(lscore),True,(255,255,255))
+        screen.blit(txt,(screen.get_width()/4 - txt.get_width()/2,screen.get_height()/2))
+        txt = font3.render(str(rscore),True,(255,255,255))
+        screen.blit(txt,(screen.get_width()*3/4 - txt.get_width()/2,screen.get_height()/2))
+        txt = font4.render("Press Spsce to restart",True,(255,255,255))
+        screen.blit(txt,(screen.get_width()*5/9,screen.get_height()-50))
+        while True:
+            for event in pygame.event.get():
+                if event.type == QUIT:
+                    sys.exit()
+                pressed_keys = pygame.key.get_pressed()
+                if pressed_keys[K_SPACE]:
+                    lscore = 0
+                    rscore = 0
+                    bats[0].y = 200
+                    bats[1].y = 200
+                    exit = True
+                    match_start = time.time()
+                    ball = Ball()
+                    break
+            if exit:
+                exit = False
+                break
+            pygame.display.update()
 
     pygame.display.update()

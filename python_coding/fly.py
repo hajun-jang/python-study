@@ -8,6 +8,7 @@ screen = pygame.display.set_mode((1000,600))
 fly_image = pygame.image.load("python_coding/images/fly.png").convert_alpha()
 fly_sound = pygame.mixer.Sound("python_coding/sounds/fly-buzz.ogg")
 homescreen_image = pygame.image.load("python_coding/images/flycatcher_home.png").convert_alpha()
+frog_image = pygame.image.load("python_coding/images/frog.png").convert_alpha()
 font = pygame.font.SysFont("draglinebtndm",60)
 menu = "start"
 
@@ -24,9 +25,24 @@ class Fly:
             rotated = pygame.transform.rotate(fly_image,self.dir)
             screen.blit(rotated,(self.x,self.y))
 
-fly = Fly()
+class Frog:
+    def __init__(self):
+        self.dir = 0
 
-while 1:
+    def move(self):
+        if pressed_keys[K_LEFT]:
+            self.dir += 4
+        if pressed_keys[K_RIGHT]:
+            self.dir -= 4
+
+    def draw(self):
+        rotated = pygame.transform.rotate(frog_image,self.dir)
+        screen.blit(rotated,(screen.get_width()/2-rotated.get_width()/2,screen.get_height()/2-rotated.get_height()/2))
+
+fly = None
+frog = Frog()
+
+while True:
     clock.tick(60)
     for event in pygame.event.get():
         if event.type == QUIT:
@@ -45,8 +61,10 @@ while 1:
         menu = "game"
 
     if menu == "game":
-        if time.time() > fly.spawn_time + 4.4:
+        if fly == None or time.time() > fly.spawn_time + 4.4:
             fly = Fly()
         screen.fill((255,255,255))
+        frog.move()
+        frog.draw()
         fly.draw()
     pygame.display.update()
