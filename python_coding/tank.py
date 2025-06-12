@@ -30,10 +30,21 @@ class Wall:
             self.y += self.speed
         else:
             self.x += self.speed
-        if((self.vert and (self.y < 50 or self.y > 350)) or (not self.vert and ((self.x < 50 or self.x > 750) or (self.x > 200 and self.x < 600)))):
+        if (
+            (self.vert and (self.y < 50 or self.y > 350)) or 
+            (not self.vert and ((self.x < 50 or self.x > 750) or 
+            (self.x > 200 and self.x < 600)))):
             self.speed *= -1
-walls = (Wall(496,200,True),Wall(50,150,False),Wall(600,150,False),Wall(50,435,False),Wall(600,435,False))
-while 1:
+
+class Tank:
+    def __init__(self,x,y,dir,ctrls,img):
+        self.x = x
+        self.y = y
+        self.ctrls = ctrls
+        self.dir = dir
+        self.img = img
+walls = [Wall(496,200,True),Wall(50,150,False),Wall(600,150,False),Wall(50,435,False),Wall(600,435,False)]
+while True:
     clock.tick(60)
 
     for event in pygame.event.get():
@@ -46,10 +57,10 @@ while 1:
         if pygame.mouse.get_pressed()[0] and buttonrect.collidepoint(pygame.mouse.get_pos()):
             menu = "game"
 
-        if menu == "game":
-            screen.blit(landscape_image,(0,0))
-            for wall in walls:
-                wall.move()
-                wall.draw()
+    if menu == "game":
+        screen.blit(landscape_image,(0,0))
+        for wall in walls:
+            wall.move()
+            wall.draw()
 
-        pygame.display.update()
+    pygame.display.update()
