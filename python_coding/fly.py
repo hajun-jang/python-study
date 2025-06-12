@@ -11,6 +11,9 @@ homescreen_image = pygame.image.load("python_coding/images/flycatcher_home.png")
 frog_image = pygame.image.load("python_coding/images/frog.png").convert_alpha()
 tounge_sound = pygame.mixer.Sound("python_coding/sounds/tongue.ogg")
 font = pygame.font.SysFont("draglinebtndm",60)
+font2 = pygame.font.SysFont("couriernew",15)
+gameover_image = pygame.image.load("python_coding/images/flycatcher_game_over.png").convert_alpha()
+death_time = False
 menu = "start"
 
 class Fly:
@@ -42,6 +45,7 @@ class Frog:
         self.dir = 0
         self.tongue_dist = 0
         self.tongue_extend = 0
+        self.enargy = 100
 
     def move(self):
         self.tongue_dist += self.tongue_extend * 10
@@ -55,11 +59,15 @@ class Frog:
                 self.dir -= 4
 
     def draw(self):
-        tpos = self.get_tongue_pos()
-        pygame.draw.circle(screen,(255,50,50),tpos,10)
-        pygame.draw.line(screen,(255,50,50),(screen.get_width()/2,screen.get_height()/2),tpos,10)
-        rotated = pygame.transform.rotate(frog_image,self.dir)
-        screen.blit(rotated,(screen.get_width()/2-rotated.get_width()/2,screen.get_height()/2-rotated.get_height()/2))
+        if death_time:
+            rotated = pygame.transform.rotozoom(frog_image,self.dir,1-((time.time()-death_time)/2))
+            screen.blit(rotated,(screen.get_width()/2-rotated.get_width()/2,screen.get_height()/2-rotated.get_height()/2))
+        else:
+            tpos = self.get_tongue_pos()
+            pygame.draw.circle(screen,(255,50,50),tpos,10)
+            pygame.draw.line(screen,(255,50,50),(screen.get_width()/2,screen.get_height()/2),tpos,10)
+            rotated = pygame.transform.rotate(frog_image,self.dir)
+            screen.blit(rotated,(screen.get_width()/2-rotated.get_width()/2,screen.get_height()/2-rotated.get_height()/2))
 
     def get_tongue_pos(self):
         return (
@@ -94,8 +102,10 @@ while True:
         screen.blit(txt, (txt_x, txt_y))
     if pygame.mouse.get_pressed()[0] and buttonrect.collidepoint(pygame.mouse.get_pos()):
         menu = "game"
+        game_start = time.time()
 
     if menu == "game":
+        frog.enargy -= 1
         if fly == None or (time.time() > fly.spawn_time + 4.4 and not fly.stuck):
             fly = Fly()
         if fly.stuck and frog.tongue_dist == 0:
@@ -105,4 +115,30 @@ while True:
         frog.draw()
         fly.stick()
         fly.draw()
+        if frog.enargy >= 0:
+            pygame.draw.rect(screen,(255,50,0),(10,10,20,frog.enargy))
+            txt = font2.render("Time:"+str(int((time.time()-game_start)*10)/10.),True,(0,0,0),screen.blit(txt,(10,120)))
+            if frog.enargy <= 0 and not death_time and frog.tongue_dist == 0:
+                death_time = time.time()
+            if death_time and time.time() > death_time + 2:
+                menu = "dead"
+
+    if menu == "dead":
+        screen.blit(gameover_image,(0,0))
+        txt = font2.render("You survived: "+str(int((death_time - game_start)*10)/10.)+"seconds",True,(0,0,0))
+        screen.blit(txt,(705,500))
+        txt = font.render("Play",True,(255,255,255))
+        txt_x = 705
+        txt_y = 235
+        buttonrect = pygame.Rect((txt_x,txt_y,),txt.get_size())
+        pygame.draw.rect(screen,(200,50,0),buttonrect)
+        screen.blit(txt,(txt_x,txt_y))
+
+        if pygame.mouse.get_pressed()[0] and buttonrect.collidepoint(pygame.mouse.get_pos()):
+            menu = "game"
+            game_start = time.time()
+            enargy = 100
+            death_time = False
+            fly = None
+            frog = Frog()
     pygame.display.update()

@@ -4,12 +4,12 @@ pygame.init()
 pygame.display.set_caption("Tank battle")
 clock = pygame.time.Clock()
 screen = pygame.display.set_mode((1000,600))
-homescreen_image = pygame.image.load("파이썬으로 시작하는 코딩/images/TBhomescreen.jpg").convert()
-landscape_image = pygame.image.load("파이썬으로 시작하는 코딩/images/landscape.jpg").convert()
-wall_image = pygame.image.load("파이썬으로 시작하는 코딩/images/wall.png").convert()
+homescreen_image = pygame.image.load("python_coding/images/TBhomescreen.jpg").convert()
+landscape_image = pygame.image.load("python_coding/images/landscape.jpg").convert()
+wall_image = pygame.image.load("python_coding/images/wall.png").convert()
 vert_wall_image = pygame.transform.rotate(wall_image,90)
-tankG_image = pygame.image.load("파이썬으로 시작하는 코딩/images/tankG.png").convert_alpha()
-tankB_image = pygame.image.load("파이썬으로 시작하는 코딩/images/tankB.png").convert_alpha()
+tankG_image = pygame.image.load("python_coding/images/tankG.png").convert_alpha()
+tankB_image = pygame.image.load("python_coding/images/tankB.png").convert_alpha()
 menu = "home"
 
 class Wall:
