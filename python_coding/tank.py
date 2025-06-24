@@ -1,4 +1,4 @@
-import pygame, sys
+import pygame, sys, math, random, time
 from pygame.locals import *
 pygame.init()
 pygame.display.set_caption("Tank battle")
@@ -43,13 +43,53 @@ class Tank:
         self.ctrls = ctrls
         self.dir = dir
         self.img = img
+    def draw(self):
+        rotated = pygame.transform.rotate(self.img,self.dir)
+        screen.blit(rotated,(self.x+self.img.get_width()/2-rotated.get_width()/2,self.y+self.img.get_height()/2-rotated.get_height()/2))
+    def move(self):
+        dx = math.sin(math.radians(self.dir))
+        dy = math.cos(math.radians(self.dir))
+        if pressed_keys[self.ctrls[0]]:
+            self.x -= dx
+            self.y -= dy
+        if pressed_keys[self.ctrls[1]]:
+            self.x += 0.5 * dx
+            self.y += 0.5 * dy
+        if pressed_keys[self.ctrls[2]]:
+            self.dir += 1
+        if pressed_keys[self.ctrls[3]]:
+            self.dir -= 1
+    def fire(self):
+        shells.append(Shell(self.x+self.img.get_width()/2,self.y+self.img.get_height()/2,self.dir))
+
+class Shell:
+    def __init__(self,x,y,dir):
+        self.dx = -math.sin(math.radians(dir))*5
+        self.dy = -math.cos(math.radians(dir))*5
+        self.x = x + self.dx * 8
+        self.y = y + self.dy * 8
+    def move(self):
+        self.x += self.dx
+        self.y += self.dy
+    def draw(self):
+        pygame.draw.circle(screen,(100,50,50),(int(self.x),int(self.y)),3)
+
 walls = [Wall(496,200,True),Wall(50,150,False),Wall(600,150,False),Wall(50,435,False),Wall(600,435,False)]
+tankG = Tank(740,20,180,(K_UP,K_DOWN,K_LEFT,K_RIGHT),tankG_image)
+tankB = Tank(200,500,0,(K_w,K_s,K_a,K_d),tankB_image)
+shells = []
 while True:
     clock.tick(60)
 
     for event in pygame.event.get():
         if event.type == QUIT:
             sys.exit()
+        if event.type == KEYDOWN and event.key == K_RSHIFT and menu == "game":
+            tankG.fire()
+        if event.type == KEYDOWN and event.key == K_q and menu == "game":
+            tankB.fire()
+    
+    pressed_keys = pygame.key.get_pressed()
 
     if menu == "home":
         screen.blit(homescreen_image,(0,0))
@@ -58,9 +98,19 @@ while True:
             menu = "game"
 
     if menu == "game":
+        tankG.move()
+        tankB.move()
         screen.blit(landscape_image,(0,0))
+        tankG.draw()
+        tankB.draw()
         for wall in walls:
             wall.move()
             wall.draw()
+        
+        i = 0
+        while i < len(shells):
+            shells[i].move()
+            shells[i].draw()
+            i += 1
 
     pygame.display.update()
