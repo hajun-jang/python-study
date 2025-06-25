@@ -10,6 +10,9 @@ wall_image = pygame.image.load("python_coding/images/wall.png").convert()
 vert_wall_image = pygame.transform.rotate(wall_image,90)
 tankG_image = pygame.image.load("python_coding/images/tankG.png").convert_alpha()
 tankB_image = pygame.image.load("python_coding/images/tankB.png").convert_alpha()
+shell_sound = pygame.mixer.Sound("python_coding/sounds/shell.ogg")
+harm_sound = pygame.mixer.Sound("python_coding/sounds/tank_hit.ogg")
+pygame.mixer.init(buffer=512)
 menu = "home"
 
 class Wall:
@@ -43,9 +46,12 @@ class Tank:
         self.ctrls = ctrls
         self.dir = dir
         self.img = img
+        self.flash_time_end = 0
+        self.lives = 3
     def draw(self):
-        rotated = pygame.transform.rotate(self.img,self.dir)
-        screen.blit(rotated,(self.x+self.img.get_width()/2-rotated.get_width()/2,self.y+self.img.get_height()/2-rotated.get_height()/2))
+        if time.time() > self.flash_time_end or time.time()%0.1 < 0.05:
+            rotated = pygame.transform.rotate(self.img,self.dir)
+            screen.blit(rotated,(self.x+self.img.get_width()/2-rotated.get_width()/2,self.y+self.img.get_height()/2-rotated.get_height()/2))
     def move(self):
         dx = math.sin(math.radians(self.dir))
         dy = math.cos(math.radians(self.dir))
@@ -61,6 +67,12 @@ class Tank:
             self.dir -= 1
     def fire(self):
         shells.append(Shell(self.x+self.img.get_width()/2,self.y+self.img.get_height()/2,self.dir))
+    def hit_shell(self,shell):
+        return pygame.Rect(self.x,self.y+10,60,60).collidepoint(shell.x,shell.y)
+    def harm(self):
+        if time.time() > self.flash_time_end:
+            self.flash_time_end = time.time() + 2
+            self.lives -= 1
 
 class Shell:
     def __init__(self,x,y,dir):
@@ -68,11 +80,29 @@ class Shell:
         self.dy = -math.cos(math.radians(dir))*5
         self.x = x + self.dx * 8
         self.y = y + self.dy * 8
+        self.bounces = 0
+        shell_sound.play()
     def move(self):
         self.x += self.dx
         self.y += self.dy
     def draw(self):
         pygame.draw.circle(screen,(100,50,50),(int(self.x),int(self.y)),3)
+    def bounce(self):
+        for wall in walls:
+            if wall.vert and pygame.Rect((wall.x,wall.y),vert_wall_image.get_size()).collidepoint(self.x,self.y):
+                self.dx *= -1
+                self.bounces += 1
+            if not wall.vert and pygame.Rect((wall.x,wall.y),wall_image.get_size()).collidepoint(self.x,self.y):
+                self.dy *= -1
+                self.bounces += 1
+            if self.x < 0 or self.x > 1000:
+                self.dx *= -1
+                self.bounces += 0.2
+                time.sleep(0.01)
+            if self.y < 0 or self.y > 600:
+                self.dy *= -1
+                self.bounces += 0.2
+                time.sleep(0.01)
 
 walls = [Wall(496,200,True),Wall(50,150,False),Wall(600,150,False),Wall(50,435,False),Wall(600,435,False)]
 tankG = Tank(740,20,180,(K_UP,K_DOWN,K_LEFT,K_RIGHT),tankG_image)
@@ -110,7 +140,24 @@ while True:
         i = 0
         while i < len(shells):
             shells[i].move()
+            shells[i].bounce()
             shells[i].draw()
+            flag = False
+
+            if tankG.hit_shell(shells[i]):
+                tankG.harm()
+                harm_sound.play()
+                flag = True
+            if tankB.hit_shell(shells[i]):
+                tankB.harm()
+                harm_sound.play()
+                flag = True
+            if shells[i].bounces >= 5:
+                flag = True
+
+            if flag:
+                del shells[i]
+                i -= 1
             i += 1
 
     pygame.display.update()
