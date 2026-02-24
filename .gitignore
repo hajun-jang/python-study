@@ -5,5 +5,6 @@
 /super_submarine_game_multiplecomputer.py
 /email.py
 /terminalreset(vs).py
+/serverthread
 *.txt
 *.docx
